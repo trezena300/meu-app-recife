@@ -1,3 +1,102 @@
+# App - Unidades de Distribuição de Preservativos (Recife)
+
+Aplicativo mobile desenvolvido em React Native (Expo) que consome dados
+abertos da Prefeitura do Recife sobre Unidades de Distribuição de
+Preservativos, captura a localização do usuário e persiste esse histórico
+em um backend próprio.
+
+## Sobre a atividade
+
+Trabalho individual da disciplina [nome da disciplina/Senac], com o
+objetivo de demonstrar habilidades de desenvolvimento em React Native,
+integração com APIs de dados abertos e uso de geolocalização.
+
+## Por que essa API?
+
+A API de **Unidades de Distribuição de Preservativos** foi escolhida por
+ser um dado de saúde pública relevante, já vir com latitude/longitude
+prontas (permitindo cruzamento direto com geolocalização) e por ter
+estrutura de dados simples, ideal para exibição em lista mobile.
+
+Fonte: [Portal de Dados Abertos do Recife](https://dados.recife.pe.gov.br/dataset/unidades-de-distribuicao-de-preservativos)
+
+## Funcionalidades
+
+- Captura da localização atual do usuário (`expo-location`)
+- Listagem das unidades de distribuição, consumindo a API do Dados Recife
+- Botão para salvar a localização do usuário junto com a unidade consultada
+- Histórico dos registros salvos, consultado a partir do backend próprio
+
+## Estrutura do projeto
+src/
+
+app/
+
+_layout.tsx       # Configura a navegação por abas (NativeTabs)
+
+index.tsx         # Tela inicial - captura de localização
+
+lista.tsx         # Tela de listagem - consome API do Dados Recife
+
+historico.tsx     # Tela de histórico - consome o backend próprio
+
+components/
+
+app-tabs.tsx       # Componente de configuração das abas
+
+...                # Componentes visuais (Themed*, etc.) do template Expo
+
+constants/
+
+hooks/
+
+## Tecnologias
+
+- React Native + Expo
+- Expo Router (navegação por arquivo, com abas nativas)
+- expo-location (geolocalização)
+- TypeScript
+
+## API consumida
+
+- **Dados Recife**: `https://dados.recife.pe.gov.br/api/3/action/datastore_search?resource_id=c901459f-f6c7-44dc-bdd5-dd4081e58e69`
+- **Backend próprio**: ver repositório [backend-recife](LINK_DO_OUTRO_REPO_AQUI)
+
+## Como rodar localmente
+
+### Pré-requisitos
+- Node.js instalado
+- App **Expo Go** instalado no celular (Android/iOS)
+- Celular e computador na mesma rede Wi-Fi
+
+### Passos
+
+```bash
+npm install
+npx expo start
+```
+
+Escaneie o QR code exibido no terminal com o app Expo Go.
+
+### Configuração da URL do backend
+
+Antes de testar a tela de Histórico e o botão "Salvar", configure a URL
+do backend nos arquivos `src/app/lista.tsx` e `src/app/historico.tsx`,
+substituindo:
+
+```ts
+const URL_BACKEND = 'http://SEU_IP_OU_URL_AQUI:8081/registros';
+```
+
+- Para teste local: use o IP da sua máquina na rede (`ipconfig` no Windows)
+- Para produção: use a URL pública do backend hospedado no Render
+
+> O backend precisa estar rodando para que as telas de "Lista" (salvar)
+> e "Histórico" (listar) funcionem corretamente.
+
+## Autor
+
+[Seu nome aqui] — Projeto individual, Senac
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
