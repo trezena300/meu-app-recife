@@ -7,7 +7,7 @@ em um backend próprio.
 
 ## Sobre a atividade
 
-Trabalho individual da disciplina [nome da disciplina/Senac], com o
+Trabalho individual da disciplina Coding mobile, com o
 objetivo de demonstrar habilidades de desenvolvimento em React Native,
 integração com APIs de dados abertos e uso de geolocalização.
 
@@ -60,7 +60,7 @@ hooks/
 ## API consumida
 
 - **Dados Recife**: `https://dados.recife.pe.gov.br/api/3/action/datastore_search?resource_id=c901459f-f6c7-44dc-bdd5-dd4081e58e69`
-- **Backend próprio**: ver repositório [backend-recife](LINK_DO_OUTRO_REPO_AQUI)
+- **Backend próprio**: ver repositório https://github.com/trezena300/backend-recife.git
 
 ## Como rodar localmente
 
@@ -96,7 +96,7 @@ const URL_BACKEND = 'http://SEU_IP_OU_URL_AQUI:8081/registros';
 
 ## Autor
 
-[Seu nome aqui] — Projeto individual, Senac
+Vinicius Trezena — Projeto individual, Senac
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
