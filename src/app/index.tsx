@@ -1,98 +1,80 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, ActivityIndicator, Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Location from 'expo-location';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { Spacing, BottomTabInset, MaxContentWidth } from '@/constants/theme';
 
 export default function HomeScreen() {
+  const [carregando, setCarregando] = useState(false);
+  const [localizacao, setLocalizacao] = useState<{ latitude: number; longitude: number } | null>(null);
+
+  // Pede permissão e captura a localização atual do usuário
+  async function pegarLocalizacao() {
+    setCarregando(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permissão negada', 'Precisamos da localização para continuar.');
+        return;
+      }
+      const loc = await Location.getCurrentPositionAsync({});
+      setLocalizacao({
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
+      });
+    } catch (erro) {
+      Alert.alert('Erro', 'Não foi possível obter a localização.');
+      console.error(erro);
+    } finally {
+      setCarregando(false);
+    }
+  }
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
+        <ThemedText type="title" style={styles.title}>
+          Unidades de Distribuição{'\n'}de Preservativos - Recife
         </ThemedText>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        <Pressable onPress={pegarLocalizacao} style={({ pressed }) => [styles.botao, pressed && styles.pressed]}>
+          <ThemedText type="link">Capturar minha localização</ThemedText>
+        </Pressable>
 
-        {Platform.OS === 'web' && <WebBadge />}
+        {carregando && <ActivityIndicator style={{ marginTop: 10 }} />}
+
+        {localizacao && (
+          <ThemedText type="small" style={styles.texto}>
+            Lat: {localizacao.latitude.toFixed(5)} | Lng: {localizacao.longitude.toFixed(5)}
+          </ThemedText>
+        )}
+
+        <ThemedText type="small" style={styles.dica}>
+          Use as abas abaixo para ver as unidades e o histórico salvo.
+        </ThemedText>
       </SafeAreaView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
+  container: { flex: 1 },
   safeArea: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
+    justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: Spacing.four,
     gap: Spacing.three,
     paddingBottom: BottomTabInset + Spacing.three,
     maxWidth: MaxContentWidth,
+    alignSelf: 'center',
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  title: { textAlign: 'center', marginBottom: Spacing.three },
+  botao: { padding: Spacing.three },
+  pressed: { opacity: 0.6 },
+  texto: { marginTop: Spacing.two },
+  dica: { marginTop: Spacing.five, textAlign: 'center' },
 });
