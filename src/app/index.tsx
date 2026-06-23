@@ -8,18 +8,22 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing, BottomTabInset, MaxContentWidth } from '@/constants/theme';
 
 export default function HomeScreen() {
+   // Estado que controla o indicador de carregamento enquanto busca o GPS
   const [carregando, setCarregando] = useState(false);
+  // Estado que armazena as coordenadas capturadas do dispositivo
   const [localizacao, setLocalizacao] = useState<{ latitude: number; longitude: number } | null>(null);
 
   // Pede permissão e captura a localização atual do usuário
   async function pegarLocalizacao() {
     setCarregando(true);
     try {
+       // Solicita permissão de localização em primeiro plano (enquanto o app está aberto)
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Permissão negada', 'Precisamos da localização para continuar.');
         return;
       }
+      // Obtém a posição atual do dispositivo via GPS
       const loc = await Location.getCurrentPositionAsync({});
       setLocalizacao({
         latitude: loc.coords.latitude,
@@ -39,13 +43,14 @@ export default function HomeScreen() {
         <ThemedText type="title" style={styles.title}>
           Unidades de Distribuição{'\n'}de Preservativos - Recife
         </ThemedText>
+        {/* Botão para iniciar a captura de localização */}
 
         <Pressable onPress={pegarLocalizacao} style={({ pressed }) => [styles.botao, pressed && styles.pressed]}>
           <ThemedText type="link">Capturar minha localização</ThemedText>
         </Pressable>
-
+         {/* Indicador de carregamento exibido enquanto o GPS está sendo consultado */}
         {carregando && <ActivityIndicator style={{ marginTop: 10 }} />}
-
+        {/* Exibe as coordenadas capturadas após o GPS retornar resultado */}
         {localizacao && (
           <ThemedText type="small" style={styles.texto}>
             Lat: {localizacao.latitude.toFixed(5)} | Lng: {localizacao.longitude.toFixed(5)}

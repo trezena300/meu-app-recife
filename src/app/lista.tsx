@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import * as Location from 'expo-location';
+// Estrutura dos campos retornados pela API do Dados Recife
 
 type UnidadeSaude = {
   _id: number;
@@ -21,29 +22,32 @@ type UnidadeSaude = {
   latitude: string;
   longitude: string;
 };
-
+// URL da API pública do Portal de Dados Abertos do Recife
+// Dataset: Unidades de Distribuição de Preservativos
 const URL_API =
   'https://dados.recife.pe.gov.br/api/3/action/datastore_search?resource_id=c901459f-f6c7-44dc-bdd5-dd4081e58e69';
 
-// Troque pelo IP da SUA máquina na rede local (não use localhost no celular)
+// URL do backend próprio hospedado no Render
 const URL_BACKEND = 'https://backend-recife.onrender.com/registros';
 
 export default function TelaLista() {
   const [dados, setDados] = useState<UnidadeSaude[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
+  // Controla qual item está sendo salvo (para mostrar loading no botão correto)
   const [salvandoId, setSalvandoId] = useState<number | null>(null);
-
+ // Busca os dados da API do Recife ao montar o componente
   useEffect(() => {
     buscarDados();
   }, []);
-
+// Faz a requisição GET para a API do Dados Recife e atualiza o estado
   async function buscarDados() {
     setCarregando(true);
     setErro(null);
     try {
       const resposta = await fetch(URL_API);
       const json = await resposta.json();
+      // Os registros ficam dentro de json.result.records (padrão CKAN)
       setDados(json.result.records);
     } catch (e) {
       setErro('Erro ao buscar dados da API do Recife.');
@@ -53,18 +57,21 @@ export default function TelaLista() {
     }
   }
 
-  // Captura a localização do usuário e salva no backend junto com a unidade escolhida
+  // Captura a localização atual do usuário e envia um POST para o backend
+  // salvando o relacionamento entre a localização e a unidade consultada
   async function salvarRegistro(item: UnidadeSaude) {
     setSalvandoId(item._id);
     try {
+       // Solicita permissão de localização
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Permissão negada', 'Precisamos da localização para salvar.');
         return;
       }
+      // Obtém as coordenadas GPS atuais
 
       const loc = await Location.getCurrentPositionAsync({});
-
+// Monta o corpo da requisição POST com localização + dado consumido
       const corpo = {
         latitude: loc.coords.latitude,
         longitude: loc.coords.longitude,
@@ -72,7 +79,7 @@ export default function TelaLista() {
         bairroUnidade: item.bairro,
         dadoConsumido: `Consultou: ${item.nome_oficial} (${item.bairro})`,
       };
-
+      // Envia o POST para o backend próprio persistir o registro
       const resposta = await fetch(URL_BACKEND, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -120,7 +127,7 @@ export default function TelaLista() {
           <Text>Endereço: {item.endereço}</Text>
           {item.horario ? <Text>Horário: {item.horario}</Text> : null}
           {item.fone ? <Text>Telefone: {item.fone}</Text> : null}
-
+        {/* Botão que salva a localização atual + unidade no backend */}
           <Pressable
             onPress={() => salvarRegistro(item)}
             disabled={salvandoId === item._id}

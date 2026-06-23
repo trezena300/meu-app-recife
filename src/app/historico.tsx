@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, RefreshControl } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 
-// Nomes batendo com o RegistroResponse.java (camelCase)
+// Estrutura do registro retornado pelo backend (camelCase, padrão Java/Spring)
 type Registro = {
   id: number;
   latitude: number;
@@ -13,13 +13,13 @@ type Registro = {
   criadoEm: string;
   
 };
-
+// URL do backend próprio hospedado no Render
 const URL_BACKEND = 'https://backend-recife.onrender.com/registros';
 
 export default function TelaHistorico() {
   const [registros, setRegistros] = useState<Registro[]>([]);
   const [carregando, setCarregando] = useState(true);
-
+// Faz a requisição GET para o backend e atualiza a lista de registros
   async function buscarHistorico() {
     setCarregando(true);
     try {
@@ -33,8 +33,8 @@ export default function TelaHistorico() {
     }
   }
 
-  // Recarrega os dados toda vez que essa aba ganha foco
-  // (ao entrar nela pela primeira vez OU ao voltar depois de sair)
+// useFocusEffect garante que os dados sejam recarregados toda vez que
+  // o usuário navegar para essa aba, não apenas na primeira montagem
   useFocusEffect(
     useCallback(() => {
       buscarHistorico();
@@ -54,12 +54,14 @@ export default function TelaHistorico() {
       data={registros}
       keyExtractor={(item) => String(item.id)}
       contentContainerStyle={{ padding: 16 }}
+      // RefreshControl permite atualizar a lista puxando para baixo
       refreshControl={<RefreshControl refreshing={carregando} onRefresh={buscarHistorico} />}
       renderItem={({ item }) => (
         <View style={styles.card}>
           <Text style={styles.nome}>{item.nomeUnidade}</Text>
           <Text>Bairro: {item.bairroUnidade}</Text>
           <Text>Lat: {item.latitude.toFixed(5)} | Lng: {item.longitude.toFixed(5)}</Text>
+           {/* Formata a data de criação no padrão brasileiro */}
           <Text style={styles.data}>{new Date(item.criadoEm).toLocaleString('pt-BR')}</Text>
         </View>
       )}
