@@ -11,9 +11,10 @@ type Registro = {
   bairroUnidade: string;
   dadoConsumido: string;
   criadoEm: string;
+  
 };
 
-const URL_BACKEND = 'http://192.168.1.13:8081/registros';
+const URL_BACKEND = 'https://backend-recife.onrender.com/registros';
 
 export default function TelaHistorico() {
   const [registros, setRegistros] = useState<Registro[]>([]);

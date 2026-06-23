@@ -26,7 +26,7 @@ const URL_API =
   'https://dados.recife.pe.gov.br/api/3/action/datastore_search?resource_id=c901459f-f6c7-44dc-bdd5-dd4081e58e69';
 
 // Troque pelo IP da SUA máquina na rede local (não use localhost no celular)
-const URL_BACKEND = 'http://192.168.1.13:8081/registros';
+const URL_BACKEND = 'https://backend-recife.onrender.com/registros';
 
 export default function TelaLista() {
   const [dados, setDados] = useState<UnidadeSaude[]>([]);
